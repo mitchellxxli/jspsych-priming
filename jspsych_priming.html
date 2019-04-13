@@ -1,0 +1,290 @@
+<!--Written by Mitchell Li, April 2019-->
+<!--If things suddenly stop working, please let the author know via pull request-->
+
+<!--enjoy, and good luck on your experiment!!!-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>jsPsych Priming Experiment</title>
+    <script src="jspsych-6.0.5/jspsych.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-html-keyboard-response.js"></script>
+    <link href="jspsych-6.0.5/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  </head>
+  <body></body>
+  <script>
+    
+    /* generate a random subject ID with 15 characters */
+    var par_id = jsPsych.randomization.randomID(15); 
+    console.log(par_id)
+
+    /* add subject ID to every trial */
+    jsPsych.data.addProperties({
+        participant: par_id,
+    }); 
+
+    /* This code was written to run an experiment with seven sets of stimuli
+
+    Each set of stimuli creates 14 trials, each with a specific condition
+    and a specific pair of stimuli from the set in each trial
+
+    Each stimuli pair consists of a prime and a target
+
+    These blocks are inserted into the timeline in order, starting on line 238 */
+
+
+    /* create timeline and blocks */
+    var timeline = [];
+    var practice = [];
+    var b01 = []; 
+    var b02 = [];
+    var b03 = [];
+    var b04 = [];
+    var b05 = [];
+    var b06 = [];
+    var b07 = [];
+    var b08 = [];
+    var b09 = [];
+    var b10 = [];
+    var b11 = [];
+    var b12 = [];
+    var b13 = [];
+    var b14 = [];
+    var all_blocks = [b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14];
+
+
+    /* defining stimuli */
+    var set1 = ['tree', 'talp', 'number', 'noodle', 'book', 'blob', 'rabbit', 'rubber'];
+    var set2 = ['eye', 'erf', 'wood', 'well', 'mother', 'mascot', 'deer', 'dice'];
+    var set3 = ['dam', 'dar', 'father', 'finger', 'scar', 'seal', 'socks', 'sheet'];
+    var set4 = ['arm', 'ast', 'coin', 'clip', 'pen', 'pea', 'honey', 'hippo'];
+    var set5 = ['rain', 'reen', 'feather', 'flipper', 'fish', 'fort', 'wheat', 'waist'];
+    var set6 = ['toe', 'tiy', 'paper', 'pizza', 'mole', 'milk', 'ruler', 'robot'];
+    var set7 = ['fee', 'fal', 'lung', 'list', 'robber', 'rodent', 'quilt', 'quack'];
+
+    var stim_sets = [set1, set2, set3, set4, set5, set6, set7];
+
+
+    /* specifying conditions and stimuli items for each condition */
+    var w_condlist = [
+        ['t_comp_sgt',2,0],
+        ['t_comp_sg',4,0],
+        ['t_comp_rmt',6,0],
+        ['t_ctrl_sgt',3,0],
+        ['t_ctrl_sg',5,0],
+        ['t_ctrl_rmt',7,0]
+    ];
+
+    var nw_condlist = [
+        ['nw_comp_sgt',2,1],
+        ['nw_comp_sg',4,1],
+        ['nw_comp_rmt',6,1],
+        ['nw_ctrl_sgt',3,1],
+        ['nw_ctrl_sg',5,1],
+        ['nw_ctrl_rmt',7,1]
+    ];
+
+
+    /* Each trial must go into a block
+    The lists specifying condition and stimuli make six trials each
+    This list specifies where those six trials go, in order */     
+    var orders = [
+        [b01, b03, b05, b07, b09, b11],
+        [b02, b04, b06, b08, b10, b12],
+        [b03, b05, b07, b09, b11, b13],
+        [b04, b06, b08, b10, b12, b14],
+        [b14, b12, b10, b08, b06, b04],
+        [b13, b11, b09, b07, b05, b03],
+        [b12, b10, b08, b06, b04, b02],
+        [b11, b09, b07, b05, b03, b01]
+    ];
+
+
+    /* defining pre-experiment messages */
+    var welcome_msg = 'Welcome to the experiment. Press any key to begin' 
+    var instruct_msg = "<p>In this experiment, a word will appear in the center " +
+          "of the screen.</p><p>If the word is a <strong>real</strong> word, " +
+          "press the letter F on the keyboard as fast as you can.</p>" +
+          "<p>If the word is <strong>not</strong> a real word, press the letter J " +
+          "as fast as you can.</p>" +
+          "<p>There will be practice trials at the beginning so that you can get used to the experiment.</p>" +
+          "<p>Press any key to begin.</p>"
+
+
+    /* These next functions make trial elements
+    
+    Generally, messing with the functions to make trials will make the code break
+    
+    Change these at your own risk */
+
+
+    /* a function to generate a trial that displays text until the participant presses a button */    
+    function msg_trial(msg, cond) {
+        var trial = {
+            type: "html-keyboard-response",
+            stimulus: msg,
+            data: {trial_cond: cond}
+            };
+        
+        timeline.push({timeline: [trial]});
+    };
+
+    /* making welcome and instruction trials */
+    msg_trial(welcome_msg, 'welcome')
+    msg_trial(instruct_msg, 'instructions')
+
+
+    /* defining fixed trial elements */
+    var forward_mask = {
+        type: 'html-keyboard-response',
+        stimulus: '$@#$£@£%',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 500,
+        data: {trial_cond: 'f_mask'}
+    };
+
+    var backward_mask = {
+        type: 'html-keyboard-response',
+        stimulus: '%$%£@£$#',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 24,
+        data: {trial_cond: 'b_mask'}
+    };
+
+    var isi = {
+        type: 'html-keyboard-response',
+        stimulus: '',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 1000,
+        data: {trial_cond: 'isi'}
+    };
+
+    /* functions to generate trial elements that take input (like primes and targets) */
+    function prime(stim, cond) {
+        return {
+            type: 'html-keyboard-response',
+            stimulus: stim,
+            choices: jsPsych.NO_KEYS,
+            trial_duration: 59,
+            data: {
+                prime: stim,
+                trial_cond: cond
+            }
+        };
+    };
+
+    function target(stim, cond) {
+        return {
+            type: 'html-keyboard-response',
+            stimulus: stim,
+            choices: [70,74],
+            /* 70 = f, 74 = j (if you want to know more, google javascript keycodes) */
+            trial_duration: 3000,
+            data: {
+                target: stim,
+                trial_cond: cond
+            }
+        };
+    };
+
+    /* a function to define one trial from a set of stimuli, based on a condition */
+    function make_trial(stim_set, cond, i, j) {
+
+        var prm = prime(stim_set[i], cond);
+        var trg = target(stim_set[j], cond);
+
+        return {
+            timeline: [forward_mask, prm, backward_mask, trg, isi]
+        };
+    };
+
+    /* a function to define all the trials from a set of stimuli 
+    and put them into their appropriate blocks*/
+    function all_trials(stimlist, w_order, nw_order) {
+
+        var i = 0
+        w_condlist.forEach(function(elem) {
+            var trial = make_trial(stimlist, elem[0], elem[1], elem[2]);
+            w_order[i].push(trial);
+            i += 1
+        });
+
+        var j = 0
+        nw_condlist.forEach(function(elem) {
+            var trial = make_trial(stimlist, elem[0], elem[1], elem[2]);
+            nw_order[j].push(trial);
+            j += 1
+        });
+    
+    };
+
+    /* Making trials from all of the sets of stimuli
+    Trials from each set are placed into blocks in a specific order
+    This is where the orders list from the beginning is used */
+    all_trials(set1, orders[0], orders[7]);
+    all_trials(set2, orders[1], orders[6]);
+    all_trials(set3, orders[2], orders[5]);
+    all_trials(set4, orders[3], orders[4]);
+    all_trials(set5, orders[6], orders[1]);
+    all_trials(set6, orders[5], orders[2]);
+    all_trials(set7, orders[4], orders[3]);
+
+    
+    /* Adding all of the blocks to the experiment timeline
+    There's a shuffle function because JavaScript doesn't have a built-in shuffle method for arrays :(
+    So I took one from the internet to shuffle the trials in each block
+    The blocks will still be inserted into the timeline in order */
+    all_blocks.forEach(function(block) {
+
+        function shuffle(arry) {
+            let len = arry.length;
+            let temp;
+            let index;
+
+            // While there are elements in the array
+            while (len > 0) {
+                // Pick a random index
+                index = Math.floor(Math.random() * len);
+                // Decrease len by 1
+                len--;
+                // And swap the last element with it
+                temp = arry[len];
+                arry[len] = arry[index];
+                arry[index] = temp;
+            };
+ 
+            return arry;
+
+        };
+
+        var shuffled = shuffle(block);
+        
+        /* You can get rid of this if you don't want to see the contents of the shuffled
+        block in the console, but when testing your experiment, this could be helpful */
+        console.log(shuffled)
+
+        shuffled.forEach(function(item) {
+            timeline.push(item);
+        });
+    
+    });
+
+
+    /* start the experiment */
+    jsPsych.init({
+        timeline: timeline,
+        on_finish: function() {
+            jsPsych.data.get().localSave('csv', String(par_id) + '.csv');
+        }
+    });
+
+
+    /* Again, you can get rid of this if you don't want to see the contents of the timeline
+    in the console, but when testing your experiment, this could be helpful */
+    console.log(timeline)
+
+    /* In the localSave function, the first argument is the format
+    and the second is the filename, so you can change it to .tsv or something if you want */
+
+</script>
+</html>
