@@ -296,9 +296,7 @@
     });
 
 
-
     /* adding pauses every 30 trials */
-
     var tot_len = timeline.length;
     console.log(tot_len)
     var pause_ind = 30;
@@ -308,6 +306,21 @@
         timeline.splice(pause_ind,0,pause_trial);
         pause_ind += 30;
     }
+    
+
+    /* FINISHING THE EXPERIMENT. CRUCIAL FOR DATA SAVING!!! */
+    var end = {
+        type: 'html-keyboard-response',
+        stimulus: finish_msg,
+        choices: [89,78], // Y or N
+        on_finish: function(data){
+            if(data.key_press == 78){
+                jsPsych.endExperiment('The experiment was ended by pressing N.');
+            };
+        }
+    };
+
+    timeline.push(end);
 
 
     /* start the experiment */
