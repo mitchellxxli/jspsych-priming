@@ -111,7 +111,9 @@
           "<p>There will be practice trials at the beginning so that you can get used to the experiment.</p>" +
           "<p>Press any key to begin.</p>"
     var pause_msg = 'This is a break. Take as long as you need, and press any key to resume the experiment'
-
+    var finish_msg = '<p>You have reached the end of the experiment. Thank you for participating!</p>' +
+            "<p>Please alert the experimenter</p>" + 
+            "<p>Press N to finish and save data</p>"
 
     /* These next functions make trial elements
     
@@ -306,7 +308,7 @@
         timeline.splice(pause_ind,0,pause_trial);
         pause_ind += 30;
     }
-    
+
 
     /* FINISHING THE EXPERIMENT. CRUCIAL FOR DATA SAVING!!! */
     var end = {
