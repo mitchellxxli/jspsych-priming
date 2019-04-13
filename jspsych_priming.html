@@ -35,7 +35,7 @@
 
     /* create timeline and blocks */
     var timeline = [];
-    var practice = [];
+    var prac_block = [];
     var b01 = []; 
     var b02 = [];
     var b03 = [];
@@ -54,13 +54,14 @@
 
 
     /* defining stimuli */
-    var set1 = ['tree', 'talp', 'number', 'noodle', 'book', 'blob', 'rabbit', 'rubber'];
-    var set2 = ['eye', 'erf', 'wood', 'well', 'mother', 'mascot', 'deer', 'dice'];
-    var set3 = ['dam', 'dar', 'father', 'finger', 'scar', 'seal', 'socks', 'sheet'];
-    var set4 = ['arm', 'ast', 'coin', 'clip', 'pen', 'pea', 'honey', 'hippo'];
-    var set5 = ['rain', 'reen', 'feather', 'flipper', 'fish', 'fort', 'wheat', 'waist'];
-    var set6 = ['toe', 'tiy', 'paper', 'pizza', 'mole', 'milk', 'ruler', 'robot'];
-    var set7 = ['fee', 'fal', 'lung', 'list', 'robber', 'rodent', 'quilt', 'quack'];
+    var practice = ['apple', 'enging', 'notebook', 'dog', 'board'];
+    var set1 = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8'];
+    var set2 = ['b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8'];
+    var set3 = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8'];
+    var set4 = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'];
+    var set5 = ['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8'];
+    var set6 = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8'];
+    var set7 = ['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8'];
 
     var stim_sets = [set1, set2, set3, set4, set5, set6, set7];
 
@@ -100,7 +101,7 @@
     ];
 
 
-    /* defining pre-experiment messages */
+    /* defining messages to participant */
     var welcome_msg = 'Welcome to the experiment. Press any key to begin' 
     var instruct_msg = "<p>In this experiment, a word will appear in the center " +
           "of the screen.</p><p>If the word is a <strong>real</strong> word, " +
@@ -109,6 +110,7 @@
           "as fast as you can.</p>" +
           "<p>There will be practice trials at the beginning so that you can get used to the experiment.</p>" +
           "<p>Press any key to begin.</p>"
+    var pause_msg = 'This is a break. Take as long as you need, and press any key to resume the experiment'
 
 
     /* These next functions make trial elements
@@ -187,6 +189,31 @@
         };
     };
 
+
+    /* SHUFFLE FUNCTION */
+
+    function shuffle(arry) {
+        let len = arry.length;
+        let temp;
+        let index;
+
+        // While there are elements in the array
+        while (len > 0) {
+            // Pick a random index
+            index = Math.floor(Math.random() * len);
+            // Decrease len by 1
+            len--;
+            // And swap the last element with it
+            temp = arry[len];
+            arry[len] = arry[index];
+            arry[index] = temp;
+        };
+
+        return arry;
+
+    };
+
+
     /* a function to define one trial from a set of stimuli, based on a condition */
     function make_trial(stim_set, cond, i, j) {
 
@@ -218,6 +245,28 @@
     
     };
 
+
+    /* making practice trials */
+    var prac_condlist = [
+        ['practice',2,0],
+        ['practice',3,0],
+        ['practice',4,0],
+        ['practice',2,1],
+        ['practice',4,1],
+    ]; 
+
+    prac_condlist.forEach(function(elem) {
+        var prac = make_trial(practice, elem[0], elem[1], elem[2]);
+        prac_block.push(prac);
+    });
+
+    var prac_shuffled = shuffle(prac_block);
+
+    prac_shuffled.forEach(function(elem) {
+        timeline.push(elem);
+    });
+
+
     /* Making trials from all of the sets of stimuli
     Trials from each set are placed into blocks in a specific order
     This is where the orders list from the beginning is used */
@@ -230,35 +279,12 @@
     all_trials(set7, orders[4], orders[3]);
 
     
-    /* Adding all of the blocks to the experiment timeline
-    There's a shuffle function because JavaScript doesn't have a built-in shuffle method for arrays :(
-    So I took one from the internet to shuffle the trials in each block
+    /* Shuffling the contents of all of the blocks, then adding to the experiment timeline
     The blocks will still be inserted into the timeline in order */
     all_blocks.forEach(function(block) {
 
-        function shuffle(arry) {
-            let len = arry.length;
-            let temp;
-            let index;
-
-            // While there are elements in the array
-            while (len > 0) {
-                // Pick a random index
-                index = Math.floor(Math.random() * len);
-                // Decrease len by 1
-                len--;
-                // And swap the last element with it
-                temp = arry[len];
-                arry[len] = arry[index];
-                arry[index] = temp;
-            };
- 
-            return arry;
-
-        };
-
         var shuffled = shuffle(block);
-        
+
         /* You can get rid of this if you don't want to see the contents of the shuffled
         block in the console, but when testing your experiment, this could be helpful */
         console.log(shuffled)
@@ -266,8 +292,22 @@
         shuffled.forEach(function(item) {
             timeline.push(item);
         });
-    
+
     });
+
+
+
+    /* adding pauses every 30 trials */
+
+    var tot_len = timeline.length;
+    console.log(tot_len)
+    var pause_ind = 30;
+    var pause_trial = msg_trial(pause_msg,'pause')
+
+    while (tot_len > pause_ind) {
+        timeline.splice(pause_ind,0,pause_trial);
+        pause_ind += 30;
+    }
 
 
     /* start the experiment */
